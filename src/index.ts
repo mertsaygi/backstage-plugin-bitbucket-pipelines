@@ -1,4 +1,5 @@
+export * from './extensions';
 export { bitbucketPipelinesPlugin } from './plugin';
-export { BitbucketPipelinesStatusCard } from './components/BitbucketPipelinesStatusCard';
 export * from './api';
 export * from './integrations';
+export { BitbucketPipelinesStatusCard } from './components/BitbucketPipelinesStatusCard';
