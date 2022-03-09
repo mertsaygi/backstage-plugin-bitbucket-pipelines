@@ -1,5 +1,6 @@
 import { Pipeline } from './types';
-import { createApiRef, DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
+import { Config } from '@backstage/config';
+import { createApiRef } from '@backstage/core-plugin-api';
 
 export const bitbucketApiRef = createApiRef<Bitbucket>({
   id: 'plugin.bitbucket.service',
@@ -22,19 +23,17 @@ interface PipelinesResponse {
 }
 
 type Options = {
-  discoveryApi: DiscoveryApi;
-  identityApi: IdentityApi;
-  domain: string;
+  bitbucketConfig: Config;
 };
 
 /**
  * API to talk to Bitbucket.
  */
 export class BitbucketApi implements Bitbucket {
-  private readonly identityApi: IdentityApi;
+  private readonly bitbucketConfig: Config;
 
   constructor(opts: Options) {
-    this.identityApi = opts.identityApi;
+    this.bitbucketConfig = opts.bitbucketConfig;
   }
 
   private async fetch<T = any>(input: string, init?: RequestInit): Promise<T> {
@@ -50,7 +49,7 @@ export class BitbucketApi implements Bitbucket {
 
   async getPipelines(opts: PipelinesFetchOpts): Promise<Pipeline[]> {
     //const limit = opts?.limit || 50;
-    const workspace = "";
+    const workspace = this.bitbucketConfig.getString('workspace');
     const repository = opts.repositoryName;
     const response = await this.fetch<PipelinesResponse>(`/2.0/repositories/${workspace}/${repository}/pipelines/`);
 
@@ -58,8 +57,10 @@ export class BitbucketApi implements Bitbucket {
   }
 
   private async addAuthHeaders(init: RequestInit): Promise<RequestInit> {
-    const { token } = await this.identityApi.getCredentials();
-    const headers = init.headers || {};
+    const bitbucketUsername = this.bitbucketConfig.getString('username');
+    const bitbucketPassword = this.bitbucketConfig.getString('appPassword');
+    const token = btoa(`${bitbucketUsername}:${bitbucketPassword}`);
+    const headers = init.headers || {'Content-Type': 'application/json'};
 
     return {
       ...init,
