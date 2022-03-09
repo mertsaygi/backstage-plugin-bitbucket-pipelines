@@ -3,7 +3,7 @@ import { Config } from '@backstage/config';
 import { createApiRef } from '@backstage/core-plugin-api';
 
 export const bitbucketApiRef = createApiRef<Bitbucket>({
-  id: 'plugin.bitbucket.service',
+  id: 'plugin.bitbucket-pipelines.service',
 });
 
 type PipelinesFetchOpts = {
