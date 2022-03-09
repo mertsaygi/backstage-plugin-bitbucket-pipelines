@@ -8,6 +8,7 @@ import {
 } from '@backstage/core-plugin-api';
 import { rootRouteRef } from './routes';
 
+
 export const bitbucketPipelinesPlugin = createPlugin({
   id: 'bitbucket-pipelines',
   apis: [
@@ -22,6 +23,6 @@ export const bitbucketPipelinesPlugin = createPlugin({
     }),
   ],
   routes: {
-    root: rootRouteRef,
+    explore: rootRouteRef,
   },
 });
