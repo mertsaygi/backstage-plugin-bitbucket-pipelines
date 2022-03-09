@@ -49,7 +49,7 @@ export class BitbucketApi implements Bitbucket {
 
   async getPipelines(opts: PipelinesFetchOpts): Promise<Pipeline[]> {
     //const limit = opts?.limit || 50;
-    const workspace = this.bitbucketConfig.getString('workspace');
+    const workspace = this.bitbucketConfig.getOptionalString('workspace') || "";
     const repository = opts.repositoryName;
     const response = await this.fetch<PipelinesResponse>(`/2.0/repositories/${workspace}/${repository}/pipelines/`);
 
