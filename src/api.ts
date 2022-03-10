@@ -31,11 +31,11 @@ type Options = {
  */
 export class BitbucketApi implements Bitbucket {
   private readonly configApi: ConfigApi;
-  private config: Config;
+  private config: Config[];
 
   constructor(opts: Options) {
     this.configApi = opts.configApi;
-    this.config = this.configApi.getConfigArray("integrations.bitbucket")[0];
+    this.config = this.configApi.getConfigArray("integrations.bitbucket") ?? [];
   }
 
   private async fetch<T = any>(input: string, init?: RequestInit): Promise<T> {
@@ -51,7 +51,7 @@ export class BitbucketApi implements Bitbucket {
 
   async getPipelines(opts: PipelinesFetchOpts): Promise<Pipeline[]> {
     //const limit = opts?.limit || 50;
-    const workspace = this.config.getString('workspace');
+    const workspace = this.config[0].getString('workspace');
     const repository = opts.repositoryName;
     const response = await this.fetch<PipelinesResponse>(`/2.0/repositories/${workspace}/${repository}/pipelines/`);
 
@@ -59,8 +59,8 @@ export class BitbucketApi implements Bitbucket {
   }
 
   private async addAuthHeaders(init: RequestInit): Promise<RequestInit> {
-    const bitbucketUsername = this.config.getString('username');
-    const bitbucketPassword = this.config.getString('appPassword');
+    const bitbucketUsername = this.config[0].getString('username');
+    const bitbucketPassword = this.config[0].getString('appPassword');
     const token = btoa(`${bitbucketUsername}:${bitbucketPassword}`);
     const headers = init.headers || {'Content-Type': 'application/json'};
 
