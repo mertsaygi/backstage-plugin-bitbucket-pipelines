@@ -1,6 +1,9 @@
 import { Pipeline } from './types';
-import { Config } from '@backstage/config';
-import {ConfigApi, createApiRef} from '@backstage/core-plugin-api';
+import {createApiRef} from '@backstage/core-plugin-api';
+import {
+  ScmIntegrationRegistry,
+  BitbucketIntegrationConfig
+} from '@backstage/integration';
 
 export const bitbucketApiRef = createApiRef<Bitbucket>({
   id: 'plugin.bitbucket-pipelines.service',
@@ -23,7 +26,7 @@ interface PipelinesResponse {
 }
 
 type Options = {
-  configApi: ConfigApi;
+  integrations: ScmIntegrationRegistry;
   workspace: string;
 };
 
@@ -31,14 +34,12 @@ type Options = {
  * API to talk to Bitbucket.
  */
 export class BitbucketApi implements Bitbucket {
-  private readonly configApi: ConfigApi;
-  private config: Config;
+  private config: BitbucketIntegrationConfig;
   private readonly workspace: string;
 
   constructor(opts: Options) {
-    this.configApi = opts.configApi;
     this.workspace = opts.workspace;
-    this.config = this.configApi.getConfigArray("integrations.bitbucket")[0];
+    this.config = opts.integrations.bitbucket.byHost('bitbucket.org')!.config;
     console.log(this.config);
   }
 
@@ -63,8 +64,8 @@ export class BitbucketApi implements Bitbucket {
   }
 
   private async addAuthHeaders(init: RequestInit): Promise<RequestInit> {
-    const bitbucketUsername = this.config.getString('username');
-    const bitbucketPassword = this.config.getString('appPassword');
+    const bitbucketUsername = this.config.username;
+    const bitbucketPassword = this.config.appPassword;
     const token = btoa(`${bitbucketUsername}:${bitbucketPassword}`);
     const headers = init.headers || {'Content-Type': 'application/json'};
 
