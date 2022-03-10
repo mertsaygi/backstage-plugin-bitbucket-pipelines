@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { List, ListItem, ListItemText, makeStyles, Typography } from '@material-ui/core';
 import { InfoCard, InfoCardVariants, MissingAnnotationEmptyState } from '@backstage/core-components';
-import { BITBUCKET_ANNOTATION, useBitbucketRepoKey } from '../../integrations';
+import { BITBUCKET_ANNOTATION, useBitbucketRepoKey } from '../../integration';
 import { useAsync } from 'react-use';
 import { Alert as AlertUI } from '@material-ui/lab';
 import { bitbucketApiRef } from '../../api';
