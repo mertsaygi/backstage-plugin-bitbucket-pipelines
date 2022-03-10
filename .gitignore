@@ -36,3 +36,5 @@ dist-workspace
 
 # Local configuration files
 *.local.yaml
+
+.idea/

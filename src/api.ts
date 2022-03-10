@@ -35,7 +35,7 @@ export class BitbucketApi implements Bitbucket {
 
   constructor(opts: Options) {
     this.configApi = opts.configApi;
-    this.config = this.configApi.getConfigArray("integrations.bitbucket");
+    this.config = this.configApi.getOptionalConfigArray("integrations.bitbucket") ?? [];
     console.log(this.config);
   }
 
