@@ -4,8 +4,11 @@ import {
   createApiFactory,
   createPlugin,
   discoveryApiRef,
-  identityApiRef,
+  identityApiRef
 } from '@backstage/core-plugin-api';
+import {
+  scmIntegrationsApiRef,
+} from '@backstage/integration-react';
 import { rootRouteRef } from './routes';
 
 
@@ -14,10 +17,10 @@ export const bitbucketPipelinesPlugin = createPlugin({
   apis: [
     createApiFactory({
       api: bitbucketApiRef,
-      deps: { discoveryApi: discoveryApiRef, identityApi: identityApiRef, configApi: configApiRef },
-      factory: ({ configApi }) => {
+      deps: { discoveryApi: discoveryApiRef, identityApi: identityApiRef, configApi: configApiRef, scmIntegrationsApi: scmIntegrationsApiRef },
+      factory: ({ configApi, scmIntegrationsApi }) => {
         return new BitbucketApi({ 
-          integrations: configApi,
+          integrations: scmIntegrationsApi,
           workspace: configApi.getString('bitbucket.workspace'), 
         });
       },
