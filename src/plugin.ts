@@ -16,9 +16,7 @@ export const bitbucketPipelinesPlugin = createPlugin({
       api: bitbucketApiRef,
       deps: { discoveryApi: discoveryApiRef, identityApi: identityApiRef, configApi: configApiRef },
       factory: ({ configApi }) => {
-        return new BitbucketApi({
-          bitbucketConfig: configApi.getConfigArray('integrations.bitbucket')[0]
-        });
+        return new BitbucketApi({ configApi });
       },
     }),
   ],
