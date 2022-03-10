@@ -1,6 +1,6 @@
 import { Pipeline } from './types';
-import { Config } from '@backstage/config';
 import {ConfigApi, createApiRef} from '@backstage/core-plugin-api';
+import { readBitbucketIntegrationConfigs, BitbucketIntegrationConfig } from '@backstage/integration';
 
 export const bitbucketApiRef = createApiRef<Bitbucket>({
   id: 'plugin.bitbucket-pipelines.service',
@@ -24,6 +24,7 @@ interface PipelinesResponse {
 
 type Options = {
   configApi: ConfigApi;
+  workspace: string;
 };
 
 /**
@@ -31,12 +32,16 @@ type Options = {
  */
 export class BitbucketApi implements Bitbucket {
   private readonly configApi: ConfigApi;
-  private config: Config[];
+  private config: BitbucketIntegrationConfig[];
+  private readonly workspace: string;
 
   constructor(opts: Options) {
     this.configApi = opts.configApi;
-    this.config = this.configApi.getOptionalConfigArray("integrations.bitbucket") ?? [];
-    console.log(this.config);
+    this.workspace = opts.workspace;
+    this.config = readBitbucketIntegrationConfigs(this.configApi.getOptionalConfigArray("integrations.bitbucket") ?? []);
+    console.log(this.config.find(
+      v => v.host === 'bitbucket.org',
+    ));
   }
 
   private async fetch<T = any>(input: string, init?: RequestInit): Promise<T> {
@@ -52,7 +57,7 @@ export class BitbucketApi implements Bitbucket {
 
   async getPipelines(opts: PipelinesFetchOpts): Promise<Pipeline[]> {
     //const limit = opts?.limit || 50;
-    const workspace = this.config[0].getString('workspace');
+    const workspace = this.workspace;
     const repository = opts.repositoryName;
     const response = await this.fetch<PipelinesResponse>(`/2.0/repositories/${workspace}/${repository}/pipelines/`);
 
@@ -60,8 +65,12 @@ export class BitbucketApi implements Bitbucket {
   }
 
   private async addAuthHeaders(init: RequestInit): Promise<RequestInit> {
-    const bitbucketUsername = this.config[0].getString('username');
-    const bitbucketPassword = this.config[0].getString('appPassword');
+    const bitbucketUsername = this.config.find(
+      v => v.host === 'bitbucket.org',
+    )?.username;
+    const bitbucketPassword = this.config.find(
+      v => v.host === 'bitbucket.org',
+    )?.appPassword;
     const token = btoa(`${bitbucketUsername}:${bitbucketPassword}`);
     const headers = init.headers || {'Content-Type': 'application/json'};
 
