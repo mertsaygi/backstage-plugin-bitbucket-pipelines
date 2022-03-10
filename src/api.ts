@@ -36,6 +36,7 @@ export class BitbucketApi implements Bitbucket {
   constructor(opts: Options) {
     this.configApi = opts.configApi;
     this.config = this.configApi.getConfigArray("integrations.bitbucket") ?? [];
+    console.log(this.config);
   }
 
   private async fetch<T = any>(input: string, init?: RequestInit): Promise<T> {
