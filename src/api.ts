@@ -78,7 +78,7 @@ export class BitbucketApi implements Bitbucket {
       ...init,
       headers: {
         ...headers,
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...(token ? { Authorization: `Basic ${token}` } : {}),
       }
     };
   }
