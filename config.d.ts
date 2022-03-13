@@ -9,11 +9,11 @@ export interface Config {
          * Username for Bitbucket Cloud.
          * @visibility frontend
          */
-         username: string;
+        username?: string;
         /**
          * Password for Bitbucket Cloud.
          * @visibility frontend
          */
-         appPassword: string;
+        appPassword?: string;
     }
 }
