@@ -51,7 +51,6 @@ export class BitbucketApi implements Bitbucket {
     if (!resp.ok) {
       throw new Error(`Request failed with ${resp.status} ${resp.statusText}`);
     }
-    console.log(resp.json());
     return await resp.json();
   }
 
@@ -60,7 +59,6 @@ export class BitbucketApi implements Bitbucket {
     const workspace = this.workspace;
     const repository = opts.repositoryName;
     const response = await this.fetch<PipelinesResponse>(`/2.0/repositories/${workspace}/${repository}/pipelines/`);
-    console.log(response);
     return response.values;
   }
 
