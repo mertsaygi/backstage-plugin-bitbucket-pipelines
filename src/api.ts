@@ -51,7 +51,7 @@ export class BitbucketApi implements Bitbucket {
     if (!resp.ok) {
       throw new Error(`Request failed with ${resp.status} ${resp.statusText}`);
     }
-
+    console.log(resp.json());
     return await resp.json();
   }
 
