@@ -57,6 +57,7 @@ export class BitbucketApi implements Bitbucket {
     const workspace = this.workspace;
     const repository = opts.repositoryName;
     const response = await this.fetch<PipelinesResponse>(`/2.0/repositories/${workspace}/${repository}/pipelines/`);
+    console.log(response.data);
     return response.data.values;
   }
 
