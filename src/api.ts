@@ -1,4 +1,4 @@
-import { Pipeline } from './types';
+import { Pipeline, PipelineItem } from './types';
 import {createApiRef} from '@backstage/core-plugin-api';
 
 export const bitbucketApiRef = createApiRef<Bitbucket>({
@@ -14,11 +14,11 @@ type PipelinesFetchOpts = {
 }
 
 export interface Bitbucket {
-  getPipelines(opts?: PipelinesFetchOpts): Promise<Pipeline[]>;
+  getPipelines(opts?: PipelinesFetchOpts): Promise<PipelineItem[]>;
 }
 
 interface PipelinesResponse {
-  data: Pipeline[];
+  data: Pipeline;
 }
 
 type Options = {
@@ -52,13 +52,12 @@ export class BitbucketApi implements Bitbucket {
     return await resp.json();
   }
 
-  async getPipelines(opts: PipelinesFetchOpts): Promise<Pipeline[]> {
+  async getPipelines(opts: PipelinesFetchOpts): Promise<PipelineItem[]> {
     //const limit = opts?.limit || 50;
     const workspace = this.workspace;
     const repository = opts.repositoryName;
     const response = await this.fetch<PipelinesResponse>(`/2.0/repositories/${workspace}/${repository}/pipelines/`);
-    console.log(response.data);
-    return response.data;
+    return response.data.values;
   }
 
   private async addAuthHeaders(init: RequestInit): Promise<RequestInit> {

@@ -8,7 +8,7 @@ import { Alert as AlertUI } from '@material-ui/lab';
 import { bitbucketApiRef } from '../../api';
 import { Progress } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
-import { Pipeline } from '../../types';
+import { PipelineItem } from '../../types';
 import moment from "moment";
 
 type BitbucketPipelinesStatusCardProps = {
@@ -25,21 +25,21 @@ const useStyles = makeStyles({
     },
 });
 
-const PipelineListItem = ({ pipeline }: { pipeline: Pipeline }) => {
+const PipelineListItem = ({ pipeline }: { pipeline: PipelineItem }) => {
     const classes = useStyles();
-    const [pipelineState] = useState({data: pipeline, updatedAt: pipeline.startedAt});
+    const [pipelineState] = useState({data: pipeline, updatedAt: pipeline.created_on});
 
     return (
-        <ListItem dense key={pipelineState.data.id}>
+        <ListItem dense key={pipelineState.data.build_number}>
             <ListItemText
-                primary={pipelineState.data.message}
+                primary={pipelineState.data.build_number}
                 primaryTypographyProps={{
                     variant: 'body1',
                     className: classes.listItemPrimary,
                 }}
                 secondary={
                     <Typography noWrap variant="body2" color="textSecondary">
-                        Created {moment(pipelineState.data.startedAt).fromNow()}
+                        Created {moment(pipelineState.data.created_on).fromNow()}
                     </Typography>
                 }
             />
@@ -47,10 +47,10 @@ const PipelineListItem = ({ pipeline }: { pipeline: Pipeline }) => {
     );
 };
 
-const PipelineStatusSummaryTable = ({ pipelines }: { pipelines: Pipeline[] }) => {
+const PipelineStatusSummaryTable = ({ pipelines }: { pipelines: PipelineItem[] }) => {
     return (
         <List dense>
-            {pipelines.map((pipeline, index) => (<PipelineListItem key={pipeline.id + index} pipeline={pipeline} />))}
+            {pipelines.map((pipeline, index) => (<PipelineListItem key={pipeline.build_number + index} pipeline={pipeline} />))}
             {pipelines.length === 0 && <>No recent pipelines</>}
         </List>
     );
