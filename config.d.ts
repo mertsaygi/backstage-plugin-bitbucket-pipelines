@@ -5,5 +5,15 @@ export interface Config {
          * @visibility frontend
          */
         workspace: string;
+        /**
+         * Username for Bitbucket Cloud.
+         * @visibility frontend
+         */
+         username: string;
+        /**
+         * Password for Bitbucket Cloud.
+         * @visibility frontend
+         */
+         appPassword: string;
     }
 }

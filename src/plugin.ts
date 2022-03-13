@@ -18,9 +18,10 @@ export const bitbucketPipelinesPlugin = createPlugin({
     createApiFactory({
       api: bitbucketApiRef,
       deps: { discoveryApi: discoveryApiRef, identityApi: identityApiRef, configApi: configApiRef, scmIntegrationsApi: scmIntegrationsApiRef },
-      factory: ({ configApi, scmIntegrationsApi }) => {
+      factory: ({ configApi, }) => {
         return new BitbucketApi({ 
-          integrations: scmIntegrationsApi,
+          username: configApi.getString('bitbucket.username'), 
+          password: configApi.getString('bitbucket.appPassword'), 
           workspace: configApi.getString('bitbucket.workspace'), 
         });
       },
