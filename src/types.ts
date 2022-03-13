@@ -1,11 +1,4 @@
-export interface Pipeline{
-    page: number; 
-    pagelen: number;
-    values: PipelineItem[];
-    size: number;
-}
-
-export interface PipelineItem {
+export interface Pipeline {
   type: string; 
   uuid: string;
   repository: RepositoryItem;

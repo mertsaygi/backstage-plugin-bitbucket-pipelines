@@ -8,7 +8,7 @@ import { Alert as AlertUI } from '@material-ui/lab';
 import { bitbucketApiRef } from '../../api';
 import { Progress } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
-import { PipelineItem } from '../../types';
+import { Pipeline } from '../../types';
 import moment from "moment";
 
 type BitbucketPipelinesStatusCardProps = {
@@ -25,7 +25,7 @@ const useStyles = makeStyles({
     },
 });
 
-const PipelineListItem = ({ pipeline }: { pipeline: PipelineItem }) => {
+const PipelineListItem = ({ pipeline }: { pipeline: Pipeline }) => {
     const classes = useStyles();
     const [pipelineState] = useState({data: pipeline, updatedAt: pipeline.created_on});
 
@@ -47,7 +47,7 @@ const PipelineListItem = ({ pipeline }: { pipeline: PipelineItem }) => {
     );
 };
 
-const PipelineStatusSummaryTable = ({ pipelines }: { pipelines: PipelineItem[] }) => {
+const PipelineStatusSummaryTable = ({ pipelines }: { pipelines: Pipeline[] }) => {
     return (
         <List dense>
             {pipelines.map((pipeline, index) => (<PipelineListItem key={pipeline.build_number + index} pipeline={pipeline} />))}
