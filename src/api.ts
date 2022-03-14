@@ -6,10 +6,9 @@ export const bitbucketApiRef = createApiRef<Bitbucket>({
 });
 
 type PipelinesFetchOpts = {
-  limit?: number;
-  query?: string;
-  sort?: string;
-  order?: string;
+  size?: number;
+  page?: number;
+  pagelen?: number;
   repositoryName: string;
 }
 
@@ -55,10 +54,11 @@ export class BitbucketApi implements Bitbucket {
   }
 
   async getPipelines(opts: PipelinesFetchOpts): Promise<Pipeline[]> {
-    //const limit = opts?.limit || 50;
+    const pagelen = opts?.pagelen || 25;
+    const page = opts?.page || 1;
     const workspace = this.workspace;
     const repository = opts.repositoryName;
-    const response = await this.fetch<PipelinesResponse>(`/2.0/repositories/${workspace}/${repository}/pipelines/`);
+    const response = await this.fetch<PipelinesResponse>(`/2.0/repositories/${workspace}/${repository}/pipelines/?page=${page}&&pagelen=${pagelen}&&sort=-created_on`);
     return response.values;
   }
 

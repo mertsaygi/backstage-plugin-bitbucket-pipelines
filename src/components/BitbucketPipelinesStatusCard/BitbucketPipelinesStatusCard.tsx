@@ -30,16 +30,22 @@ const columns: TableColumn[] = [
       field: '',
     },
     {
-      title: 'Message',
-      field: '',
-    },
-    {
       title: 'User',
       field: '',
+      render: data => {
+        const { creator } = data as Pipeline;
+  
+        return creator.display_name;
+      },
     },
     {
       title: 'Status',
       field: '',
+      render: data => {
+        const { state } = data as Pipeline;
+  
+        return state.result.name;
+      },
     },
     {
       title: 'Started',
@@ -49,10 +55,6 @@ const columns: TableColumn[] = [
   
         return DateTime.fromISO(created_on).toRelative({ locale: 'en' });
       },
-    },
-    {
-      title: 'Duration',
-      field: 'duration_in_seconds',
     },
   ];
 
@@ -70,7 +72,7 @@ export const BitbucketPipelinesStatusCard = ({ title }: BitbucketPipelinesStatus
 
     const bitbucketApi = useApi(bitbucketApiRef);
     const repoName = useBitbucketRepoKey(entity);
-    const { value, loading, error } = useAsync(async () => await bitbucketApi.getPipelines({limit: 3, query: query, repositoryName: repoName}));
+    const { value, loading, error } = useAsync(async () => await bitbucketApi.getPipelines({page: 1, pagelen:50, repositoryName: repoName}));
 
     if (loading) {
         return <Progress />;

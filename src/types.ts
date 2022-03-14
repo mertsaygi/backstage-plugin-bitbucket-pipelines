@@ -2,9 +2,9 @@ export interface Pipeline {
   type: string; 
   uuid: string;
   repository?: RepositoryItem;
-  state?: StateItem;
+  state: StateItem;
   build_number: number;
-  creator: string;
+  creator: CreatorItem;
   created_on: string;
   completed_on: string;
   target?: TargetItem; 
@@ -23,10 +23,26 @@ export interface Pipeline {
   }
   
   export interface StateItem {
-
+    type?: string; 
+    name: string;
+    result: StateResultItem;
+  }
+  
+  export interface StateResultItem {
+    type?: string; 
+    name: string;
   }
   
   export interface CreatorItem {
+    display_name: string;
+    account_id: string;
+    links?: CreatorLinksItem;
+    nickname: string;
+    type: string;
+    uuid: string;
+  }
+  
+  export interface CreatorLinksItem {
 
   }
   
