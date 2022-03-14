@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useEntity } from '@backstage/plugin-catalog-react';
-import { List, ListItem, ListItemText, makeStyles, Typography } from '@material-ui/core';
-import { InfoCard, InfoCardVariants, MissingAnnotationEmptyState } from '@backstage/core-components';
+import { Table, TableColumn } from '@backstage/core-components';
+import { InfoCardVariants, MissingAnnotationEmptyState } from '@backstage/core-components';
 import { BITBUCKET_ANNOTATION, useBitbucketRepoKey } from '../../integration';
 import { useAsync } from 'react-use';
 import { Alert as AlertUI } from '@material-ui/lab';
@@ -9,54 +9,56 @@ import { bitbucketApiRef } from '../../api';
 import { Progress } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 import { Pipeline } from '../../types';
-import moment from "moment";
+import { DateTime } from 'luxon';
 
 type BitbucketPipelinesStatusCardProps = {
     title?: string;
     variant?: InfoCardVariants;
 };
 
-const useStyles = makeStyles({
-    listItemPrimary: {
-        fontWeight: 'bold',
+const columns: TableColumn[] = [
+    {
+      title: 'Pipeline ID',
+      field: 'build_number',
     },
-    listItemIcon: {
-        minWidth: '1em',
+    {
+      title: 'Commit SHA',
+      field: '',
     },
-});
+    {
+      title: 'Branch',
+      field: '',
+    },
+    {
+      title: 'Message',
+      field: '',
+    },
+    {
+      title: 'User',
+      field: '',
+    },
+    {
+      title: 'Status',
+      field: '',
+    },
+    {
+      title: 'Started',
+      field: 'created_on',
+      render: data => {
+        const { created_on } = data as Pipeline;
+  
+        return DateTime.fromISO(created_on).toRelative({ locale: 'en' });
+      },
+    },
+    {
+      title: 'Duration',
+      field: 'duration_in_seconds',
+    },
+  ];
 
-const PipelineListItem = ({ pipeline }: { pipeline: Pipeline }) => {
-    const classes = useStyles();
-    const [pipelineState] = useState({data: pipeline, updatedAt: pipeline.created_on});
 
-    return (
-        <ListItem dense key={pipelineState.data.build_number}>
-            <ListItemText
-                primary={pipelineState.data.build_number}
-                primaryTypographyProps={{
-                    variant: 'body1',
-                    className: classes.listItemPrimary,
-                }}
-                secondary={
-                    <Typography noWrap variant="body2" color="textSecondary">
-                        Created {moment(pipelineState.data.created_on).fromNow()}
-                    </Typography>
-                }
-            />
-        </ListItem>
-    );
-};
 
-const PipelineStatusSummaryTable = ({ pipelines }: { pipelines: Pipeline[] }) => {
-    return (
-        <List dense>
-            {pipelines.map((pipeline, index) => (<PipelineListItem key={pipeline.build_number + index} pipeline={pipeline} />))}
-            {pipelines.length === 0 && <>No recent pipelines</>}
-        </List>
-    );
-};
-
-export const BitbucketPipelinesStatusCard = ({ title, variant }: BitbucketPipelinesStatusCardProps) => {
+export const BitbucketPipelinesStatusCard = ({ title }: BitbucketPipelinesStatusCardProps) => {
     const { entity } = useEntity();
     const query = entity.metadata.annotations?.[BITBUCKET_ANNOTATION];
 
@@ -80,8 +82,11 @@ export const BitbucketPipelinesStatusCard = ({ title, variant }: BitbucketPipeli
         );
     }
     return (
-        <InfoCard title={title || "Bitbucket Pipelines Results"} variant={variant || "gridItem"}>
-            <PipelineStatusSummaryTable pipelines={value!} />
-        </InfoCard>
+        <Table
+            columns={columns}
+            options={{ padding: 'dense', paging: true, search: false, pageSize: 5 }}
+            title={title || "Bitbucket Pipelines Results"}
+            data={value!}
+        />
     );
 };
