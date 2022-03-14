@@ -13,10 +13,10 @@ type PipelinesFetchOpts = {
 }
 
 export interface Bitbucket {
-  getPipelines(opts?: PipelinesFetchOpts): Promise<Pipeline[]>;
+  getPipelines(opts?: PipelinesFetchOpts): Promise<PipelinesResponse>;
 }
 
-interface PipelinesResponse {
+export interface PipelinesResponse {
   page: number; 
   pagelen: number;
   values: Pipeline[];
@@ -53,13 +53,13 @@ export class BitbucketApi implements Bitbucket {
     return await resp.json();
   }
 
-  async getPipelines(opts: PipelinesFetchOpts): Promise<Pipeline[]> {
+  async getPipelines(opts: PipelinesFetchOpts): Promise<PipelinesResponse> {
     const pagelen = opts?.pagelen || 25;
     const page = opts?.page || 1;
     const workspace = this.workspace;
     const repository = opts.repositoryName;
     const response = await this.fetch<PipelinesResponse>(`/2.0/repositories/${workspace}/${repository}/pipelines/?page=${page}&&pagelen=${pagelen}&&sort=-created_on`);
-    return response.values;
+    return response;
   }
 
   private async addAuthHeaders(init: RequestInit): Promise<RequestInit> {

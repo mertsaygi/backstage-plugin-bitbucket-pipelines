@@ -47,7 +47,16 @@ export interface Pipeline {
   }
   
   export interface TargetItem {
-
+    type: string;
+    ref_type?: string;
+    ref_name?: string;
+    commit: TargetCommitItem;
+  }
+  
+  export interface TargetCommitItem {
+    type: string;
+    hash: string;
+    links?: string;
   }
   
   export interface TriggerItem {

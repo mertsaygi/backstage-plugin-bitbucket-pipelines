@@ -13,6 +13,7 @@ import { DateTime } from 'luxon';
 
 type BitbucketPipelinesStatusCardProps = {
     title?: string;
+    pageLength?: number;
     variant?: InfoCardVariants;
 };
 
@@ -24,10 +25,20 @@ const columns: TableColumn[] = [
     {
       title: 'Commit SHA',
       field: '',
+      render: data => {
+        const { target } = data as Pipeline;
+  
+        return target?.commit.hash;
+      },
     },
     {
       title: 'Branch',
       field: '',
+      render: data => {
+        const { target } = data as Pipeline;
+  
+        return target?.ref_name || "Pull Request";
+      },
     },
     {
       title: 'User',
@@ -60,7 +71,8 @@ const columns: TableColumn[] = [
 
 
 
-export const BitbucketPipelinesStatusCard = ({ title }: BitbucketPipelinesStatusCardProps) => {
+export const BitbucketPipelinesStatusCard = ({ title, pageLength }: BitbucketPipelinesStatusCardProps) => {
+    const pageSize = pageLength || 50;
     const { entity } = useEntity();
     const query = entity.metadata.annotations?.[BITBUCKET_ANNOTATION];
 
@@ -72,7 +84,7 @@ export const BitbucketPipelinesStatusCard = ({ title }: BitbucketPipelinesStatus
 
     const bitbucketApi = useApi(bitbucketApiRef);
     const repoName = useBitbucketRepoKey(entity);
-    const { value, loading, error } = useAsync(async () => await bitbucketApi.getPipelines({page: 1, pagelen:50, repositoryName: repoName}));
+    const { value, loading, error } = useAsync(async () => await bitbucketApi.getPipelines({page: 1, pagelen: pageSize, repositoryName: repoName}));
 
     if (loading) {
         return <Progress />;
@@ -86,9 +98,11 @@ export const BitbucketPipelinesStatusCard = ({ title }: BitbucketPipelinesStatus
     return (
         <Table
             columns={columns}
-            options={{ padding: 'dense', paging: true, search: false, pageSize: 5 }}
+            options={{ padding: 'dense', paging: true, search: true, pageSize: pageSize }}
             title={title || "Bitbucket Pipelines Results"}
-            data={value!}
+            page={value?.page}
+            totalCount={value?.size}
+            data={value?.values!}
         />
     );
 };
